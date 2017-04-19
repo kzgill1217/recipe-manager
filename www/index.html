@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title>Recipe Book</title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- pouchdb -->
+    <script src="lib/pouchdb/dist/pouchdb.min.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="js/recipe.service.js"></script>
+    <script src="js/ui.controller.js"></script>
+
+  </head>
+
+<body ng-app="app">
+
+  <ion-pane ng-controller="UIController as vm">
+
+    <ion-header-bar>
+
+      <div class="bar bar-header">
+          <input type="text" name="search" placeholder="Search.." ng-model="filter">
+           <button ng-click="vm.showAddRecipeModal()" class="button button-icon icon ion-android-add"></button>
+      </div>
+
+
+    </ion-header-bar>
+
+    <ion-content>
+
+      <ion-list>
+
+        <ion-item ng-repeat="b in vm.recipes | filter:filter track by $index" ng-click="vm.showViewRecipeModal(b)">
+
+          <div style="float: left">{{ b.name }}</div>
+
+        </ion-item>
+
+      </ion-list>
+
+
+    </ion-content>
+
+  </ion-pane>
+
+  <script id="add-or-edit-recipe.html" type="text/ng-template">
+
+    <ion-modal-view>
+
+      <ion-header-bar>
+
+        <h1 class="title">{{ action }} Recipe</h1>
+
+        <div class="buttons">
+
+          <button ng-hide="isAdd" ng-click="deleteRecipe()" class="button button-icon icon ion-trash-a"></button>
+
+        </div>
+      </ion-header-bar>
+
+      <ion-content>
+
+        <div class="list list-inset">
+
+          <label class="item item-input">
+          <input type="text" placeholder="Name" ng-model="recipe.name" required>
+          </label>
+
+          <label class="item item-input">
+          <input type="text" placeholder="Category" ng-model="recipe.category" required>
+          </label>
+
+          <div ng-repeat="ingredient in recipe.ingredients track by $index">
+          <input type="text" ng-model="recipe.ingredients[$index]">
+          <button class="button button-assertive" ng-click='deleteIngredient($index)'>Remove</button>
+          </div>
+
+          <div ng-repeat="field in table.fields track by $index">
+          <input type='text' ng-model='table.fields[$index]'>
+           <button class="button button-assertive" ng-click='del($index)'>Remove</button>
+          </div>
+          <button style="float: right" class="button button-block button-energized" ng-click="addFormField()" id="addButton">Add Ingredient</button>
+
+
+          <label class="item item-input">
+          <input type="text" placeholder="Procedure" ng-model="recipe.procedure">
+          </label>
+
+          <label class="item item-input">
+          <input type="text" placeholder="Glass" ng-model="recipe.glass">
+          </label>
+
+          <label class="item item-input">
+          <input type="text" placeholder="Garnish" ng-model="recipe.garnish">
+          </label>
+
+        </div>
+
+        <div class="padding">
+
+          <button ng-click="saveRecipe()" class="button button-block button-balanced">Save</button>
+          <button class="button button-block button-royal" ng-click="modal.hide()">Cancel</button>
+        </div>
+
+
+      </ion-content>
+    </ion-modal-view>
+  </script>
+
+
+
+  <script id="view-recipe.html" type="text/ng-template">
+    <ion-modal-view>
+      <ion-header-bar>
+        <h1 class="title">{{ recipe.name }}</h1> - {{ recipe.category }}
+      </ion-header-bar>
+      <ion-content>
+          <b>Ingredients</b>
+          <ol ng-repeat="ingredient in recipe.ingredients">
+            <li>{{ $index + 1}}. {{ingredient}}</li>
+          </ol>
+          <br>
+          <p><b>Procedure:</b> {{ recipe.procedure }}</p>
+          <p><b>Glass:</b> {{ recipe.glass }}</p>
+          <p><b>Garnish:</b> {{ recipe.garnish }}</p>
+
+
+        <div class="padding">
+
+          <div class="row">
+            <div class="col"><button class="button button-block button-energized" ng-model="recipe" ng-click="vm.showEditRecipeModal(recipe)">Edit</button></div>
+            <div class="col"><button class="button button-block button-royal" ng-click="modalView.hide()">Got It</button></div>
+          </div>
+
+        </div>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+
+</body>
+
+</html>
